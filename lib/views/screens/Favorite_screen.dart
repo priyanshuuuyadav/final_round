@@ -27,6 +27,7 @@ class FavoriteScreen extends StatelessWidget {
               ArticleModel article = controller.savedArticlesList[index];
               return ArticleItemView(
                 article: article,
+                controller: controller,
               );
             },
           );

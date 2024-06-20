@@ -1,8 +1,11 @@
 import 'package:final_assignment_app/models/news_model.dart';
+import 'package:final_assignment_app/views/utils/constant.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../controllers/time_converter.dart';
+import '../utils/colors/colors.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final ArticleModel article;
@@ -37,23 +40,21 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            widget.article.urlToImage != null
-                ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                      imageUrl: widget.article.urlToImage!,
-                      placeholder: (context, url) =>
-                          Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                )
-                : Container(
-                    height: 200,
-                    color: Colors.grey[200],
-                  ),
+            Hero(
+              tag: "${widget.article.url}",
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: widget.article.urlToImage ?? defaultImage,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             SizedBox(height: 16),
             GestureDetector(
               onTap: () async => await launch(widget.article.url ?? ""),
@@ -78,18 +79,24 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             SizedBox(height: 8),
-            Text(
-              widget.article.publishedAt != null
-                  ? "Published at: ${widget.article.publishedAt!.toLocal().toIso8601String()}"
-                  : "No Date",
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-            SizedBox(height: 8),
             if (widget.article.author != null)
               Text(
                 "Author: ${widget.article.author}",
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
+            SizedBox(height: 8),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: primaryColor)),
+              child: Text(
+                widget.article.publishedAt != null
+                    ? "Published at : ${formatDate(widget.article.publishedAt.toString() ?? "")} | ${formatTime(widget.article.publishedAt.toString() ?? "")}"
+                    : "No Date",
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
             SizedBox(height: 16.0),
             Text(
               widget.article.content ?? "No Content",

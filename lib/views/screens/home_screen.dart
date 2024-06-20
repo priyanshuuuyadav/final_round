@@ -1,8 +1,8 @@
 import 'package:final_assignment_app/controllers/news_controller.dart';
 import 'package:final_assignment_app/views/screens/search_screen.dart';
+import 'package:final_assignment_app/views/utils/colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../../models/news_model.dart';
 import 'Favorite_screen.dart';
 import 'article_item.dart';
@@ -26,26 +26,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff2f2f2),
       appBar: AppBar(
-        title: Text("Home Screen"),
+        title: Text("Home"),
         actions: [
+          IconButton(
+              color: primaryColor,
+              onPressed: () {
+                Get.to(SearchScreen());
+              },
+              icon: Icon(Icons.search)),
           Obx(
-            () =>  Badge(
-              label: Text(newsController.savedArticlesList.length.toString()),
+            () => Badge(
+              offset: Offset(-7, 4),
+              label: Text(newsController.shavedArticlesLength.toString()),
               child: IconButton(
+                  color: primaryColor,
                   onPressed: () {
                     Get.to(FavoriteScreen());
                   },
                   icon: Icon(Icons.bookmark)),
             ),
           ),
-          IconButton(
-              onPressed: () {
-                Get.to(SearchScreen());
-              },
-              icon: Icon(Icons.search))
         ],
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Hero(tag:"splash",child: Image.asset("assets/icons/news.png",)),
+        ),
+        leadingWidth: 35,
       ),
       body: FutureBuilder<NewsModel?>(
         future: newsModel,
@@ -65,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final article = snapshot.data!.articles![index];
                 return ArticleItemView(
                   article: article,
+                  controller: newsController,
                 );
               },
             );

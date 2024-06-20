@@ -1,4 +1,6 @@
 import 'package:final_assignment_app/views/screens/home_screen.dart';
+import 'package:final_assignment_app/views/screens/splash_screen.dart';
+import 'package:final_assignment_app/views/utils/themes/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -18,7 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Final Assignment App',
-      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+      theme: AppTheme.darkTheme(context),
       initialBinding: InitialBinding(),
     );
   }

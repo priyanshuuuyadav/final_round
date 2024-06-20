@@ -13,21 +13,24 @@ class NewsController extends GetxController {
   var savedArticlesList = <ArticleModel>[].obs;
   Rx<TextEditingController> queryController = TextEditingController().obs;
 
+  int get shavedArticlesLength => savedArticles.length;
   RxList<ArticleModel> allArticlesList = <ArticleModel>[].obs;
   RxList<ArticleModel> allSavedArticlesList = <ArticleModel>[].obs;
 
   RxString selectedCategory = "all".obs;
 
-  // static String apiKey = "dd358ec576f04ed8ae40571a0a173ac7";
-  static String apiKey = "b2e8b1c3327e4c31b93d8a4b9ee1da39";
+  static String apiKey = "dd358ec576f04ed8ae40571a0a173ac7";
   static String baseUrl = "https://newsapi.org/v2";
   RxBool searchStats = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadSavedArticles();
-    fetchArticlesWithApiByCategory(selectedCategory.value);
+    fetchArticlesWithApiByCategory(selectedCategory.value).then(
+      (value) {
+        loadSavedArticles();
+      },
+    );
   }
 
   Future<void> fetchArticlesWithApiByCategory(String category) async {
@@ -76,7 +79,9 @@ class NewsController extends GetxController {
 
       if (response.statusCode == 200) {
         var data = NewsModel.fromJson(json.decode(response.body));
-        allArticlesList.value.assignAll(data.articles!);
+        allArticlesList.assignAll(data.articles!);
+        print("allArticlesList ${allArticlesList.length}");
+        return data;
       } else {
         print("Failed to load news ${response.body}");
         return null;
@@ -89,25 +94,29 @@ class NewsController extends GetxController {
   Future<void> loadSavedArticles() async {
     final articles = await DatabaseHelper.instance.getSavedArticles();
     savedArticles.assignAll(articles);
+    savedArticlesList.value = savedArticles
+        .map(
+          (url) => filteredArticles.singleWhere(
+            (article) => article.url == url,
+          ),
+        )
+        .toList();
   }
 
-  Future<void> saveAndRemoveSaveArticle(String url) async {
+  Future<void> saveAndRemoveSaveArticle(
+      String url, ArticleModel article) async {
     if (savedArticles.contains(url)) {
       await DatabaseHelper.instance.deleteArticle(url);
       savedArticles.remove(url);
+      savedArticlesList.remove(article);
     } else {
       await DatabaseHelper.instance.saveArticle(url);
       savedArticles.add(url);
+      savedArticlesList.add(article);
     }
   }
 
   bool isArticleSaved(String url) {
     return savedArticles.contains(url);
-  }
-
-  _getAllArticle(){
-    allArticlesList.map((element) {
-      DatabaseHelper.
-    },)
   }
 }
