@@ -19,7 +19,7 @@ class ArticleItemView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => NewsDetailScreen(article: article));
+        Get.to(() => NewsDetailScreen(article: article, controller: controller));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -79,8 +79,8 @@ class ArticleItemView extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text(isSaved
-                                ? 'Article removed!'
-                                : 'Article saved!')),
+                                ? 'Article removed from favourite!'
+                                : 'Article added to favourite!')),
                       );
                     },
                     icon: Icon(

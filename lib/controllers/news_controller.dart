@@ -21,7 +21,7 @@ class NewsController extends GetxController {
 
   static String apiKey = "dd358ec576f04ed8ae40571a0a173ac7";
   static String baseUrl = "https://newsapi.org/v2";
-  RxBool searchStats = false.obs;
+  RxBool searchStatus = false.obs;
 
   @override
   void onInit() {
@@ -61,9 +61,9 @@ class NewsController extends GetxController {
 
   void searchArticles(String query) {
     if (queryController.value.text.isEmpty) {
-      searchStats.value = false;
+      searchStatus.value = false;
     } else {
-      searchStats.value = true;
+      searchStatus.value = true;
     }
     articlesByQuery.value = filteredArticles
         .where((article) =>

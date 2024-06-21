@@ -65,9 +65,9 @@ class _SearchScreenState extends State<SearchScreen> {
             SizedBox(height: 16.0),
             Obx(
               () {
-                if (!newsController.searchStats.value) {
+                if (!newsController.searchStatus.value) {
                   return Expanded(
-                    child: ListView.separated(
+                    child: newsController.filteredArticles.isNotEmpty ? ListView.separated(
                       separatorBuilder: (context, index) => Divider(),
                       itemCount: newsController.filteredArticles.length,
                       itemBuilder: (context, index) {
@@ -84,6 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           onTap: () {
                             Get.to(NewsDetailScreen(
                               article: article,
+                              controller: newsController,
                             ));
                           },
                           leading: Hero(
@@ -110,11 +111,11 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         );
                       },
-                    ),
+                    ):Center(child: Text("Not Found")),
                   );
                 } else {
                   return Expanded(
-                    child: ListView.separated(
+                    child: newsController.articlesByQuery.isNotEmpty ? ListView.separated(
                       separatorBuilder: (context, index) => Divider(),
                       itemCount: newsController.articlesByQuery.length,
                       itemBuilder: (context, index) {
@@ -131,6 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           onTap: () {
                             Get.to(NewsDetailScreen(
                               article: article,
+                              controller: newsController,
                             ));
                           },
                           leading: Hero(
@@ -157,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         );
                       },
-                    ),
+                    ):Center(child: Text("Not Found")),
                   );
                 }
               },

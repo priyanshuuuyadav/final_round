@@ -1,22 +1,21 @@
+import 'package:final_assignment_app/controllers/news_controller.dart';
 import 'package:final_assignment_app/models/news_model.dart';
 import 'package:final_assignment_app/views/utils/constant.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/time_converter.dart';
 import '../utils/colors/colors.dart';
 
-class NewsDetailScreen extends StatefulWidget {
+class NewsDetailScreen extends StatelessWidget {
   final ArticleModel article;
+  final NewsController controller;
 
-  NewsDetailScreen({required this.article});
+  NewsDetailScreen({required this.article, required this.controller});
 
-  @override
-  State<NewsDetailScreen> createState() => _NewsDetailScreenState();
-}
-
-class _NewsDetailScreenState extends State<NewsDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,11 +24,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.article.author ?? 'News detail',
+              article.author ?? 'News detail',
               style: TextStyle(fontSize: 20),
             ),
             Text(
-              widget.article.source?.name ?? 'News source',
+              article.source?.name ?? 'News source',
               style: TextStyle(fontSize: 14),
             ),
           ],
@@ -41,11 +40,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: "${widget.article.url}",
+              tag: "${article.url}",
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: CachedNetworkImage(
-                  imageUrl: widget.article.urlToImage ?? defaultImage,
+                  imageUrl: article.urlToImage ?? defaultImage,
                   placeholder: (context, url) =>
                       Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
@@ -57,10 +56,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             ),
             SizedBox(height: 16),
             GestureDetector(
-              onTap: () async => await launch(widget.article.url ?? ""),
+              onTap: () async => await launch(article.url ?? ""),
               child: RichText(
                 text: TextSpan(
-                  text: widget.article.title ?? 'No Title',
+                  text: article.title ?? 'No Title',
                   style: TextStyle(
                     fontSize: 22.0,
                     fontWeight: FontWeight.bold,
@@ -68,20 +67,19 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     color: Colors.blue,
                   ),
                   recognizer: TapGestureRecognizer()
-                    ..onTap =
-                        () async => await launch(widget.article.url ?? ""),
+                    ..onTap = () async => await launch(article.url ?? ""),
                 ),
               ),
             ),
             SizedBox(height: 8),
             Text(
-              widget.article.source?.name ?? "No Source",
+              article.source?.name ?? "No Source",
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             SizedBox(height: 8),
-            if (widget.article.author != null)
+            if (article.author != null)
               Text(
-                "Author: ${widget.article.author}",
+                "Author: ${article.author}",
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             SizedBox(height: 8),
@@ -91,20 +89,42 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(color: primaryColor)),
               child: Text(
-                widget.article.publishedAt != null
-                    ? "Published at : ${formatDate(widget.article.publishedAt.toString() ?? "")} | ${formatTime(widget.article.publishedAt.toString() ?? "")}"
+                article.publishedAt != null
+                    ? "Published at : ${formatDate(article.publishedAt.toString() ?? "")} | ${formatTime(article.publishedAt.toString() ?? "")}"
                     : "No Date",
                 style: TextStyle(fontSize: 14),
               ),
             ),
             SizedBox(height: 16.0),
             Text(
-              widget.article.content ?? "No Content",
+              article.content ?? "No Content",
               style: TextStyle(fontSize: 16),
             ),
           ],
         ),
       ),
+      floatingActionButton: Obx(() {
+        bool isSaved = controller.isArticleSaved(article.url ?? '');
+        return IconButton(
+          onPressed: () async {
+            await controller.saveAndRemoveSaveArticle(
+                article.url ?? '', article);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(isSaved
+                      ? 'Article removed from favourite!'
+                      : 'Article added to favourite!')),
+            );
+          },
+          icon: Icon(
+            isSaved
+                ? CupertinoIcons.bookmark_fill
+                : CupertinoIcons.bookmark,
+            color: primaryColor,
+            size: 35,
+          ),
+        );
+      }),
     );
   }
 }

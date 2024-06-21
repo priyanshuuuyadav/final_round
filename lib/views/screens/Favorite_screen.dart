@@ -15,11 +15,11 @@ class FavoriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Saved Articles'),
+        title: Text('Favorite Articles'),
       ),
       body: Obx(() {
         if (controller.savedArticlesList.isEmpty) {
-          return Center(child: Text('No saved articles'));
+          return Center(child: Text('No Favorite articles'));
         } else {
           return ListView.builder(
             itemCount: controller.savedArticlesList.length,
